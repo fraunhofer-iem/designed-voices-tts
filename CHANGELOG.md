@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Acknowledge ENGAGE-KI project funding in the release footer, independently of
+  component licences and upstream attribution.
+
 - Add strict, checksum-verified CPU safetensors loaders for separate Voca8,
   Voca64 and German Kale generators. Portable native output is exactly equal
   to the original fixed checkpoints on twelve retained phoneme-plan cases.

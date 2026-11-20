@@ -30,3 +30,7 @@ complete training recipes will be added as their release checks finish.
 
 The Space is not yet qualified or deployed. No prerecorded sample lookup or
 server-side inference is substituted for the browser implementation.
+
+---
+
+Funded as part of ENGAGE-KI — https://engage-ki.de/
