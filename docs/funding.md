@@ -9,5 +9,4 @@ Approved release footer:
 Use this acknowledgement in the repository README, Hugging Face model cards and
 client Space footer. Naming only ENGAGE-KI is insufficient: explicitly name BMFTR.
 This funding acknowledgement is separate from component licences, upstream
-credits and dataset provenance. It does not authorize adding logos or burning
-credits into generated artwork or video.
+credits and dataset provenance.

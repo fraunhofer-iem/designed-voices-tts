@@ -24,9 +24,14 @@ model = load_release("models/example")
 print(model.voices)
 ```
 
+## Native model releases
+
+- Voca8/Voca64: https://huggingface.co/Fraunhofer-IEM/tiny-voca-de-en
+- German Kale: https://huggingface.co/Fraunhofer-IEM/kale-nano-de
+
 See [model format](docs/model-format.md), [live metrics](docs/live-metrics.md)
-and [third-party notices](THIRD_PARTY_NOTICES.md). Model download links and
-complete training recipes will be added as their release checks finish.
+and [third-party notices](THIRD_PARTY_NOTICES.md). Complete training recipes
+remain in preparation.
 
 The Space is not yet qualified or deployed. No prerecorded sample lookup or
 server-side inference is substituted for the browser implementation.
