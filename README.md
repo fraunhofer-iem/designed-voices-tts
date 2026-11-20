@@ -33,4 +33,6 @@ server-side inference is substituted for the browser implementation.
 
 ---
 
-Funded as part of ENGAGE-KI — https://engage-ki.de/
+Gefördert durch das Bundesministerium für Forschung, Technologie und Raumfahrt
+(BMFTR) im Rahmen des Projekts ENGAGE-KI. Betreut vom Projektträger Karlsruhe
+(PTKA). https://engage-ki.de/
