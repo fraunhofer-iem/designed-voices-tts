@@ -1,0 +1,32 @@
+# Designed Voices TTS
+
+Compact German/English speech synthesis with separately trained tiny-voca and
+Kale Nano model families. Includes portable CPU reference inference, model source
+and browser telemetry. Training recipes and the complete CPU-WebAssembly showcase
+are being prepared; this source release does not claim they are finished.
+
+The model families are independent: voice vectors are checkpoint-specific, and
+these fixed-roster models do not offer reference-audio zero-shot cloning.
+
+## Reference code
+
+```sh
+uv sync --extra kale --extra export
+just check
+```
+
+The Python API loads a directory containing checksum-pinned `config.json` and
+`model.safetensors`:
+
+```python
+from designed_tts.release import load_release
+model = load_release("models/example")
+print(model.voices)
+```
+
+See [model format](docs/model-format.md), [live metrics](docs/live-metrics.md)
+and [third-party notices](THIRD_PARTY_NOTICES.md). Model download links and
+complete training recipes will be added as their release checks finish.
+
+The Space is not yet qualified or deployed. No prerecorded sample lookup or
+server-side inference is substituted for the browser implementation.

@@ -1,0 +1,16 @@
+.venv/
+__pycache__/
+*.pyc
+node_modules/
+dist/
+artifacts/
+models/
+output/
+outputs/
+private/
+.env
+.kyz/
+*.pt
+*.safetensors
+*.onnx
+.ripwire_quality_baseline
