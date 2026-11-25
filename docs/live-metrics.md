@@ -5,6 +5,11 @@ snapshot `designed-tts/live-metrics/v1`. No private text or transcript is includ
 
 - Stage latency and synthesis/end-to-end real-time factors are measured around
   actual operations. Playback-ready scheduling is not physical audible latency.
+- `run.speakingRate` records the rate of the run. Real-time factors divide by the
+  duration of the samples that were produced, so a slower or faster rate changes
+  the factor through the actual audio length, never through the planned one.
+- Each listed output keeps the snapshot of its own run. The measurements area and
+  the JSON export show the selected output; during a run they show that run.
 - Backend, SIMD and active thread configuration come from the running engine.
   Browser-reported logical processors are not a CPU model or certified minimum.
 - WASM capacity counts registered memory objects once and observes growth. It is

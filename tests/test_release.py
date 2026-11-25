@@ -23,7 +23,7 @@ class PortableReleaseTests(unittest.TestCase):
             source = root / "synthetic.pt"
             torch.save({"config": self.model.config.to_dict(), "step": 0, "model": self.model.state_dict()}, source)
             metadata = convert(source, root / "release", family="voca", expected_sha256=digest(source))
-            loaded = load_release(root / "release")
+            loaded = load_release(root / "release", marking=False)
             self.assertEqual(metadata["default_seed"], 20261119)
             for key, value in self.model.state_dict().items():
                 self.assertTrue(torch.equal(value, loaded.models[0].state_dict()[key]), key)
@@ -55,7 +55,7 @@ class PortableReleaseTests(unittest.TestCase):
             (root / "config.json").write_text(json.dumps({
                 "format": "designed-tts/model/v1", "weights": {"sha256": "0" * 64}}))
             with self.assertRaisesRegex(ValueError, "WEIGHTS_INTEGRITY_FAILURE"):
-                load_release(root)
+                load_release(root, marking=False)
 
     def test_input_validation(self):
         model = Release({"family": "voca", "default_seed": 20261119,

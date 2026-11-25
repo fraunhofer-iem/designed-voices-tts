@@ -64,3 +64,18 @@ test('rejects invalid measurements and non-CPU demo backend',()=>{
  m.configureInference({backend:'wasm',threads:1,simd:true});
  expect(m.snapshot().inference.backend.gpuUsed).toBe(false);
 });
+
+test('records the speaking rate and measures real-time factor against the actual audio length',async()=>{
+ let clock=0;const m=new LiveMetrics({now:()=>clock});
+ m.startRun('default-rate');
+ expect(m.snapshot().run.speakingRate).toBe(1);
+ m.startRun('slow-run',{speakingRate:0.75});
+ await m.measure('synthesis',async()=>{clock=100;});
+ // 0.75 stretched 3 s of planned speech to 4 s of samples; RTF uses the 4 s.
+ m.finishRun({id:'slow-run',samples:96000,sampleRate:24000});
+ const run=m.snapshot().run;
+ expect(run.speakingRate).toBe(0.75);
+ expect(run.audioSeconds).toBe(4);
+ expect(run.synthesisRtf).toBe(0.025);
+ for(const value of [0,-1,NaN,'1'])expect(()=>m.startRun('bad',{speakingRate:value})).toThrow('INVALID_SPEAKING_RATE');
+});

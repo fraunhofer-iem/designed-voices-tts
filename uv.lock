@@ -8,6 +8,21 @@ resolution-markers = [
 ]
 
 [[package]]
+name = "audioseal"
+version = "0.2.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "einops" },
+    { name = "numpy" },
+    { name = "omegaconf" },
+    { name = "torch" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/3c/fa/09cf455e2abb7698afe98f284aa268d15d55cc282db997b9b20ae174483a/audioseal-0.2.1.tar.gz", hash = "sha256:fe185c8474249d866a09c92b4788d828956c9407fd2664e2755c57dd72d8c1a9", size = 54468, upload-time = "2026-11-03T11:15:41.653Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/64/c1/4ac1f07b873a5c9dc9d08a81cb7ef42fc2b1f8cb0a2ba6492c71518c0778/audioseal-0.2.1-py3-none-any.whl", hash = "sha256:e51ee84850d5e2351346c52b1711373cdedb952676da91484fd0cff430236c25", size = 64976, upload-time = "2026-11-03T11:15:39.861Z" },
+]
+
+[[package]]
 name = "certifi"
 version = "2026.10.23"
 source = { registry = "https://pypi.org/simple" }
@@ -121,6 +136,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "numpy" },
+    { name = "onnxruntime" },
     { name = "safetensors" },
     { name = "torch" },
 ]
@@ -134,18 +150,32 @@ kale = [
     { name = "torchaudio" },
     { name = "transformers" },
 ]
+marker-export = [
+    { name = "audioseal" },
+]
 
 [package.metadata]
 requires-dist = [
+    { name = "audioseal", marker = "extra == 'marker-export'", specifier = "==0.2.1" },
     { name = "numpy", specifier = "==2.2.6" },
     { name = "onnx", marker = "extra == 'export'", specifier = "==1.19.1" },
+    { name = "onnxruntime", specifier = "==1.23.1" },
     { name = "onnxruntime", marker = "extra == 'export'", specifier = "==1.23.1" },
     { name = "safetensors", specifier = ">=0.6,<0.8" },
     { name = "torch", specifier = "==2.8.0" },
     { name = "torchaudio", marker = "extra == 'kale'", specifier = "==2.8.0" },
     { name = "transformers", marker = "extra == 'kale'", specifier = "==4.57.3" },
 ]
-provides-extras = ["kale", "export"]
+provides-extras = ["kale", "export", "marker-export"]
+
+[[package]]
+name = "einops"
+version = "0.8.2"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/2c/77/850bef8d72ffb9219f0b1aac23fbc1bf7d038ee6ea666f331fa273031aa2/einops-0.8.2.tar.gz", hash = "sha256:609da665570e5e265e27283aab09e7f279ade90c4f01bcfca111f3d3e13f2827", size = 56261, upload-time = "2026-01-26T04:13:17.638Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/2a/09/f8d8f8f31e4483c10a906437b4ce31bdf3d6d417b73fe33f1a8b59e34228/einops-0.8.2-py3-none-any.whl", hash = "sha256:54058201ac7087911181bfec4af6091bb59380360f069276601256a76af08193", size = 65638, upload-time = "2026-01-26T04:13:18.546Z" },
+]
 
 [[package]]
 name = "filelock"
@@ -531,6 +561,18 @@ version = "12.8.90"
 source = { registry = "https://pypi.org/simple" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/a2/eb/86626c1bbc2edb86323022371c39aa48df6fd8b0a1647bc274577f72e90b/nvidia_nvtx_cu12-12.8.90-py3-none-manylinux2014_x86_64.manylinux_2_17_x86_64.whl", hash = "sha256:5b17e2001cc0d751a5bc2c6ec6d26ad95913324a4adb86788c944f8ce9ba441f", size = 89954, upload-time = "2025-03-07T01:42:44.131Z" },
+]
+
+[[package]]
+name = "omegaconf"
+version = "2.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "pyyaml" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/cc/10/1cabf3188a4d9684a06568c7fd76f9536eede625733c8399cf1f5337b83e/omegaconf-2.4.0.tar.gz", hash = "sha256:7e219a70bea371da250285b9c01c7db027bc421722799c2cc4ff14bc4a2a753b", size = 3544508, upload-time = "2026-10-09T12:44:02.326Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4f/bd/0d9f8247b0819385213d09564eda5c52d3673313c2414d51f72883ec24cd/omegaconf-2.4.0-py3-none-any.whl", hash = "sha256:f141a664c777582405e3cc6e0545ecc79429e79f844995b1a6e71c35946a025c", size = 254152, upload-time = "2026-10-09T12:43:59.764Z" },
 ]
 
 [[package]]

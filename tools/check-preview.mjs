@@ -1,0 +1,31 @@
+import {chromium} from 'playwright';
+import {mkdir,writeFile} from 'node:fs/promises';
+import {previewProfile} from './preview-profile.mjs';
+const P=await previewProfile(process.env.PREVIEW_URL),EN=P.english;
+await mkdir('artifacts/preview-proof',{recursive:true});
+const browser=await chromium.launch({channel:'chrome',headless:true});
+try{
+ const page=await browser.newPage({viewport:{width:1440,height:1100}});const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')console.log('console-error',m.text());});
+ await page.goto(process.env.PREVIEW_URL||'http://127.0.0.1:8894/',{waitUntil:'networkidle'});
+ await page.waitForFunction(()=>window.tts?.status().ready);
+ console.log('UI ready');
+ const german=await page.evaluate(()=>window.tts.synthesize({family:'kale',lang:'de',voice:'fresh-de-f01',text:'Guten Morgen! Heute sprechen wir über neue Ideen.'}));
+ console.log('German',JSON.stringify(german));
+ await page.screenshot({path:'artifacts/preview-proof/desktop.png',fullPage:true});
+ const playback=await page.evaluate(async()=>{const a=document.getElementById('audio');await a.play();return {duration:a.duration,paused:a.paused};});
+ console.log('playback',JSON.stringify(playback));
+ const english=await page.evaluate(EN=>window.tts.synthesize({...EN,lang:'en',text:'Hello! This voice is generated right here in your browser.'}),EN);
+ console.log('English',JSON.stringify(english));
+ await page.context().setOffline(true);
+ const offline=await page.evaluate(EN=>window.tts.synthesize({...EN,lang:'en',text:'A different sentence, synthesized offline after the assets have loaded.'}),EN);
+ console.log('Offline changed text',offline.samples);
+ await page.context().setOffline(false);
+ const cancellation=await page.evaluate(async EN=>{const pending=window.tts.synthesize({...EN,lang:'en',text:'Cancel this speech before it finishes. '.repeat(8)}).then(()=>false,error=>error.name==='AbortError');window.tts.cancel();return {cancelled:await pending,status:window.tts.status()};},EN);
+ if(!cancellation.cancelled||cancellation.status.busy)throw Error('CANCELLATION_FAILED');
+ await page.setViewportSize({width:390,height:844});await page.screenshot({path:'artifacts/preview-proof/phone.png',fullPage:true});
+ const overflow=await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth);
+ const result={families:P.families,german,english,offline,cancellation,playback,errors,overflow,browser:await browser.version(),scope:'Actual tailnet HTTP preview, raw text through browser CPU-WASM; not physical phone'};
+ await writeFile('artifacts/preview-proof/RESULT.json',JSON.stringify(result,null,2));
+ if(errors.length||overflow)throw Error(JSON.stringify({errors,overflow}));
+ console.log('PASS');
+}finally{await browser.close();}

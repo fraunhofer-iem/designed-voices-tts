@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0e0359"><title>Sprachsynthese im Browser · ENGAGE-KI</title><link rel="stylesheet" href="/style.css"><link rel="icon" href="data:,"></head>
+<body>
+<header class="site-header">
+<span class="header-link" data-i18n="brand.subtitle">Sprachsynthese</span>
+<div class="header-right">
+<div class="locale-switch" id="locale-switch" role="group" aria-label="Sprache der Oberfläche" data-i18n-aria-label="locale.group">
+<button type="button" id="locale-de" data-locale="de" lang="de" aria-pressed="true">DE</button>
+<button type="button" id="locale-en" data-locale="en" lang="en" aria-pressed="false">EN</button>
+</div>
+<a class="header-link" href="#messwerte"><span class="header-link-label" data-i18n="nav.measurements">Messwerte</span><span class="arrow" aria-hidden="true">↘</span></a>
+</div>
+</header>
+<main>
+<section class="intro">
+<div>
+<h1 data-i18n-html="intro.title">Sprachsynthese<br><em>im Browser</em></h1>
+<p data-i18n="intro.body">Text eingeben, Modell und Stimme wählen. Die Sprache wird lokal im Browser erzeugt.</p>
+</div>
+<div class="local-note"><span class="status-dot" aria-hidden="true"></span><strong data-i18n="intro.localLabel">Verarbeitung im Browser</strong><span data-i18n="intro.localNote">CPU statt GPU. Deutsch und Englisch. Kein Textversand zur Spracherzeugung.</span></div>
+</section>
+<section class="studio" aria-label="Sprachsynthese" data-i18n-aria-label="studio.label">
+<div class="editor">
+<div class="field-heading"><h2 data-i18n="editor.heading">Text</h2><span id="char-count">0 / 500</span></div>
+<label class="sr-only" for="text" data-i18n="editor.textLabel">Text zur Spracherzeugung</label>
+<textarea id="text" maxlength="500" spellcheck="false" aria-describedby="text-hint">Die Besprechung beginnt um neun Uhr. Bitte schließen Sie die Tür.</textarea>
+<p class="sr-only" id="text-hint" data-i18n="editor.shortcut">Strg+Eingabetaste oder Cmd+Eingabetaste erzeugt das Audio.</p>
+<div class="examples" role="group" aria-labelledby="examples-label"><span id="examples-label" data-i18n="sample.label">Beispieltexte</span><button type="button" data-example="plain" data-i18n="example.plain">Aussage</button><button type="button" data-example="question" data-i18n="example.question">Frage</button><button type="button" data-example="time" data-i18n="example.time">Datum und Uhrzeit</button><button type="button" data-example="amount" data-i18n="example.amount">Betrag</button><button type="button" data-example="abbreviation" data-i18n="example.abbreviation">Abkürzung</button></div>
+<div class="selectors">
+<div><label for="model" data-i18n="select.model">Modell</label><select id="model"><option value="kale">Kale Nano</option><option value="voca64">Voca64</option></select></div>
+<div><label for="language" data-i18n="select.language">Sprache</label><select id="language"><option value="de" data-i18n="lang.de">Deutsch</option><option value="en" disabled data-i18n="lang.en">English</option></select></div>
+</div>
+<section class="model-loading" id="model-loading" aria-label="Modelldateien und Ladestatus" data-i18n-aria-label="model.sectionLabel" data-state="idle">
+<div class="model-loading-heading"><h3 data-i18n="model.heading">Modell und Dateien</h3><span id="model-size">Größe wird ermittelt</span></div>
+<p id="load-status" role="status">Wird beim ersten Erzeugen geladen.</p>
+<progress id="progress" value="0" max="1" aria-label="Prüfsummen-geprüfte Dateien" data-i18n-aria-label="loading.progressLabel" hidden></progress>
+<p class="loading-note" id="load-note">Einmal Dateien laden und das Modell starten. Danach wird der Text lokal erzeugt und direkt abgespielt.</p>
+</section>
+<div class="voice-heading"><label for="voice" data-i18n="select.voice">Stimme</label><span id="voice-info"></span></div><select id="voice" aria-label="Stimme" data-i18n-aria-label="select.voice"></select>
+<div class="voice-heading extra"><label for="compare" data-i18n="compare.label">Vergleichsstimme</label><span id="compare-info">optional</span></div><select id="compare"><option value="" data-i18n="compare.none">Keine</option></select>
+<div class="voice-heading extra"><label for="rate" data-i18n="rate.label">Sprechtempo</label><output id="rate-value" for="rate">1.00×</output></div>
+<input id="rate" type="range" min="0.75" max="1.5" step="0.05" value="1" list="rate-marks"><datalist id="rate-marks"><option value="1"></option></datalist>
+<div class="rate-scale" aria-hidden="true"><span>0.75×</span><span>1.50×</span></div>
+<div class="actions"><button id="generate" class="primary" type="button" aria-keyshortcuts="Control+Enter Meta+Enter"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 10 7-10 7Z"/></svg><span data-i18n="action.generate">Erzeugen und abspielen</span></button><button id="cancel" class="quiet" type="button" hidden data-i18n="action.cancel">Abbrechen</button></div>
+</div>
+<div class="listening">
+<div class="listen-top"><span id="engine-label">CPU / WASM</span><span data-i18n="audio.format">24 kHz · Mono</span></div>
+<div class="wave-area"><canvas id="waveform" aria-label="Wellenform des erzeugten Audios" data-i18n-aria-label="wave.canvasLabel"></canvas><div class="wave-empty" id="wave-empty"><div class="wave-symbol" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><h2 data-i18n="wave.title">Keine Wellenform</h2><p data-i18n="wave.body">Nach dem Erzeugen zeigt dieser Bereich die Wellenform des erzeugten Audios.</p></div></div>
+<div class="playback"><button id="play" type="button" class="play" disabled aria-label="Audio abspielen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 5 10 7-10 7Z"/></svg></button><div class="playback-copy"><strong id="audio-title">Noch kein Audio</strong><span id="audio-detail">Nach dem Erzeugen wird das Audio automatisch abgespielt.</span></div><span id="audio-time" class="number">—</span></div>
+<audio id="audio"></audio>
+<div class="reading" id="reading" hidden>
+<h3 id="reading-label" data-i18n="reading.label">Gelesen als</h3>
+<div class="reading-scroll" role="group" aria-labelledby="reading-label" tabindex="0"><p id="reading-text"></p></div>
+<details><summary data-i18n="reading.phones">Lautschrift</summary><div class="reading-scroll" role="group" aria-label="Lautschrift" data-i18n-aria-label="reading.phones" tabindex="0"><p id="reading-phones"></p></div></details>
+</div>
+<div class="runtime-state" id="status" role="status" aria-live="polite">Bereit. Das Modell wird beim Erzeugen geladen.</div>
+<div class="output-actions"><a id="download" download="engage-ki-sprachsynthese.wav" aria-disabled="true"><span data-i18n="download.wav">WAV herunterladen</span> <span aria-hidden="true">↗</span></a><button id="metrics-export" type="button" disabled data-i18n="metrics.export">Messwerte als JSON</button></div>
+</div>
+<section class="outputs" aria-labelledby="outputs-title">
+<div class="outputs-heading"><h2 id="outputs-title" tabindex="-1" data-i18n="outputs.title">Ausgaben</h2><span id="outputs-count" class="number">0 / 8</span><button id="outputs-clear" class="quiet" type="button" disabled data-i18n="outputs.clear">Liste leeren</button></div>
+<p class="outputs-empty" id="outputs-empty">Noch keine Ausgaben. Die letzten 8 Ausgaben dieser Sitzung erscheinen hier.</p>
+<ul class="outputs-list" id="outputs-list" aria-label="Ausgaben dieser Sitzung" data-i18n-aria-label="outputs.listLabel" hidden></ul>
+</section>
+</section>
+<section class="telemetry" id="messwerte" aria-labelledby="metrics-title"><div class="section-heading"><h2 id="metrics-title" data-i18n="metrics.title">Messwerte</h2><p data-i18n="metrics.intro">Live-Messwerte dieser Sitzung; angezeigt werden nur Werte, die der Browser liefert.</p></div>
+<div class="metric-grid"><div><span data-i18n="metrics.synth">Synthese</span><strong id="metric-synth">—<small> ms</small></strong><p id="metric-rtf" data-i18n="metrics.synthNote">Echtzeitfaktor nach der Synthese</p></div><div><span data-i18n="metrics.ready">Text zu Audio bereit</span><strong id="metric-ready">—<small> ms</small></strong><p data-i18n="metrics.readyNote">Einschließlich Laden und Vorbereitung</p></div><div><span data-i18n="metrics.memory">WASM-Speicher im Frontend</span><strong id="metric-memory">—<small> MB</small></strong><p data-i18n="metrics.memoryNote">Reservierte Kapazität, nicht Gesamt-RAM</p></div><div><span data-i18n="metrics.files">Geprüfte Dateien</span><strong id="metric-bytes">—<small> MB</small></strong><p id="metric-cache" data-i18n="metrics.filesNote">Modell, Frontend und Laufzeit</p></div></div>
+<details class="details"><summary><span data-i18n="metrics.details">Messgrenzen und einzelne Schritte</span><span class="summary-mark" aria-hidden="true">+</span></summary><div class="detail-content"><dl id="stage-metrics"></dl><p data-i18n="metrics.limits">CPU-Auslastung, Prozess-RAM und freier physischer Speicherplatz lassen sich über eine Webseite nicht zuverlässig messen. Angezeigt werden nur Werte, die der Browser liefert. Frontend-WASM umfasst Phony und nrmlz; interne ONNX- und QuickJS-Allokationen sind darin nicht enthalten. Der Wert für „Text zu Audio bereit“ ist keine gemessene hörbare Latenz.</p><dl id="browser-metrics"></dl></div></details>
+</section>
+<section class="method"><h2 data-i18n="method.title">Modelle und Laufzeit</h2><div><p id="method-models">Kale Nano bietet vier deutsche Stimmen; Voca64 bietet deutsche und englische Stimmen. Jede Stimme ist genau einem Modell zugeordnet.</p><p id="method-runtime" data-i18n="method.body2">nrmlz normalisiert den Text, Phony erzeugt die Lautschrift. Die Modelle erzeugen daraus die Sprache lokal im Browser. Qualität und Ressourcenbedarf hängen von Modell, Text und Gerät ab.</p><div class="source-links"><a href="https://huggingface.co/Fraunhofer-IEM/tiny-voca-de-en" target="_blank" rel="noopener" data-i18n="link.voca" data-family="voca64">Voca-Modell ↗</a><a href="https://huggingface.co/Fraunhofer-IEM/kale-nano-de" target="_blank" rel="noopener" data-i18n="link.kale" data-family="kale">Kale-Modell ↗</a><a href="https://huggingface.co/Fraunhofer-IEM/kale-nano-en" target="_blank" rel="noopener" data-i18n="link.kaleFreshEn" data-family="kale-fresh-en" hidden>Kale-Modell (Englisch) ↗</a><a href="https://huggingface.co/KaleComputer/kale-tts-1-nano" target="_blank" rel="noopener" data-i18n="link.kaleEn" data-family="kale-en" hidden>Kale TTS 1 Nano (Englisch) ↗</a><a href="https://github.com/fraunhofer-iem/designed-voices-tts" target="_blank" rel="noopener" data-i18n="link.source">Code und Lizenzen ↗</a></div></div></section>
+</main>
+<footer><a class="footer-brand" href="https://engage-ki.de/">ENGAGE-KI</a><p data-i18n-html="funding.text">Gefördert durch das Bundesministerium für Forschung, Technologie und Raumfahrt <strong>(BMFTR)</strong> im Rahmen des Projekts <strong>ENGAGE-KI</strong>. Betreut vom Projektträger Karlsruhe <strong>(PTKA)</strong>.</p><a href="https://engage-ki.de/">https://engage-ki.de/</a><a class="institute-logo" href="https://www.iem.fraunhofer.de/"><img src="/brand/fraunhofer-iem.png" alt="Fraunhofer IEM" width="3000" height="825"></a></footer>
+<script type="module" src="/app.js"></script></body></html>

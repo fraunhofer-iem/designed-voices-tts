@@ -1,0 +1,30 @@
+import {chromium} from 'playwright';
+import {mkdir,writeFile} from 'node:fs/promises';
+const out=process.env.PROOF_DIR||'artifacts/loader-playback-proof';await mkdir(out,{recursive:true});
+const browser=await chromium.launch({channel:'chrome',headless:true});
+const assert=(ok,message)=>{if(!ok)throw Error(message);};
+try{
+ const page=await browser.newPage({viewport:{width:1440,height:1100}});const errors=[];page.on('pageerror',e=>errors.push(e.message));
+ await page.goto(process.env.PREVIEW_URL||'http://127.0.0.1:8894/');await page.waitForFunction(()=>window.tts?.status().ready);
+ const initial=await page.evaluate(()=>({inEditor:document.querySelector('.editor').contains(document.getElementById('model-loading')),inWave:document.querySelector('.listening').contains(document.getElementById('progress')),text:document.getElementById('load-status').textContent}));
+ assert(initial.inEditor&&!initial.inWave,'LOADER_WRONG_LOCATION');
+ await page.fill('#text','');await page.click('#generate');
+ const invalid=await page.evaluate(()=>({status:window.tts.status(),focus:document.activeElement.id}));assert(invalid.focus==='text'&&invalid.status.message.includes('Bitte zuerst'),'EMPTY_TEXT_FEEDBACK');
+ let release;const gate=new Promise(resolve=>release=resolve);
+ await page.route('**/assets/kale/plan.onnx*',async route=>{await gate;await route.continue();});
+ await page.fill('#text','Die neue Stimme spricht direkt nach dem Klick.');await page.click('#generate');
+ await page.waitForFunction(()=>document.getElementById('model-loading').dataset.state==='loading');
+ const loading=await page.evaluate(()=>({state:document.getElementById('model-loading').dataset.state,visible:!document.getElementById('progress').hidden,load:window.tts.status().load}));assert(loading.visible&&!loading.load.ready,'LOADER_PROGRESS_MISSING');
+ await page.screenshot({path:out+'/desktop-loading.png',fullPage:true});release();
+ await page.waitForFunction(()=>!window.tts.status().busy&&window.__lastTtsResult,{timeout:90000});
+ const auto=await page.evaluate(()=>({paused:document.getElementById('audio').paused,currentTime:document.getElementById('audio').currentTime,load:window.tts.status().load,schedulingMs:window.__lastTtsResult.metrics.playbackSchedulingMs}));assert(!auto.paused&&auto.load.ready&&auto.schedulingMs>0,'CLICK_DID_NOT_AUTOPLAY');
+ await page.click('#play');await page.waitForFunction(()=>document.getElementById('audio').paused);
+ assert(await page.getAttribute('#play','aria-label')==='Audio abspielen','PAUSE_LABEL_STALE');
+ await page.screenshot({path:out+'/desktop-ready.png',fullPage:true});
+ await page.setViewportSize({width:390,height:844});
+ const phone=await page.evaluate(()=>{const ctx=document.createElement('canvas').getContext('2d');return {overflow:document.documentElement.scrollWidth>innerWidth,selects:['model','language'].map(id=>{const e=document.getElementById(id),s=getComputedStyle(e);ctx.font=s.font;return {id,label:e.selectedOptions[0].text,width:e.clientWidth,needed:ctx.measureText(e.selectedOptions[0].text).width+parseFloat(s.paddingLeft)+parseFloat(s.paddingRight)};})};});
+ assert(!phone.overflow&&phone.selects.every(s=>s.needed<=s.width),'MOBILE_SELECT_CLIPPED');await page.screenshot({path:out+'/phone.png',fullPage:true});
+ const fallback=await page.evaluate(async()=>{const audio=document.getElementById('audio');audio.play=()=>Promise.reject(new DOMException('blocked','NotAllowedError'));await window.tts.synthesize({text:'Ein weiterer Test.',autoplay:true});return window.tts.status();});
+ assert(fallback.message.includes('blockiert')&&!fallback.busy,'AUTOPLAY_FALLBACK_MISSING');assert(errors.length===0,'PAGE_ERRORS');
+ await writeFile(out+'/RESULT.json',JSON.stringify({initial,invalid,loading,auto,phone,fallback,errors,browser:await browser.version(),scope:'Media playback event/scheduling, not physical audible latency; phone viewport is emulation'},null,2)+'\n');console.log('PASS: prominent honest loader, autoplay, pause label, empty validation, phone labels, autoplay-policy fallback');
+}finally{await browser.close();}

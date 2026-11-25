@@ -37,9 +37,10 @@ export class LiveMetrics {
     this.assets.set(id,{received:bytes,expected:bytes,cachedBytes:cached||cacheHit?bytes:0,complete:true,cacheHit:Boolean(cacheHit)});
   }
 
-  startRun(id) {
+  startRun(id,{speakingRate=1}={}) {
     if(!id) throw Error('INVALID_RUN_ID');
-    this.run={id,started:this.now(),stages:{},status:'running',audioSeconds:null,playableMs:null};
+    if(!Number.isFinite(speakingRate)||speakingRate<=0) throw Error('INVALID_SPEAKING_RATE');
+    this.run={id,started:this.now(),stages:{},status:'running',audioSeconds:null,playableMs:null,speakingRate};
   }
 
   async measure(stage,task) {
@@ -122,7 +123,7 @@ export class LiveMetrics {
         scope:'Tracked inference asset body/cache bytes; not HTTP wire traffic or whole browser disk usage'
       },
       run:run?{
-        id:run.id,status:run.status,stages:structuredClone(run.stages),
+        id:run.id,status:run.status,speakingRate:run.speakingRate,stages:structuredClone(run.stages),
         endToEndMs:run.endToEndMs??null,audioSeconds:run.audioSeconds,
         playableMs:run.playableMs,audibleLatencyMeasured:false,
         synthesisRtf:run.status==='complete'&&Number.isFinite(synthesis)?synthesis/1000/run.audioSeconds:null,

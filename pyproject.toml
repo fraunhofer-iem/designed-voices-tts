@@ -4,11 +4,12 @@ version = "0.1.0"
 description = "Independent compact fixed-roster German and English speech models"
 requires-python = ">=3.11,<3.14"
 license = "Apache-2.0"
-dependencies = ["torch==2.8.0", "numpy==2.2.6", "safetensors>=0.6,<0.8"]
+dependencies = ["torch==2.8.0", "numpy==2.2.6", "safetensors>=0.6,<0.8", "onnxruntime==1.23.1"]
 
 [project.optional-dependencies]
 kale = ["transformers==4.57.3", "torchaudio==2.8.0"]
 export = ["onnx==1.19.1", "onnxruntime==1.23.1"]
+marker-export = ["audioseal==0.2.1"]
 
 [build-system]
 requires = ["hatchling"]
